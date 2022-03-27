@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>WSS551 Course Project</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/navbars/">
+
+    
+    <!-- Bootstrap core CSS -->
+  <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet"> 
+  <script src="./assets/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+  
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+ 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">
+  
+  <script src="navigation.js"></script>
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    
+    <!-- Custom styles for this template -->
+    <link href="navbar.css" rel="stylesheet">
+    <link href="images.css" rel="stylesheet">
+    <link href="differential.css" rel="stylesheet">
+    
+    <script src="drag_and_drop.js"></script>
+    <script src="learn_differential.js"></script>
+  </head>
+  <body>
+    
+<main>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
+    <div class="container-xl">
+      <a class="navbar-brand" id="nav_home" href="#">TheMech</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample07XL">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" id="nav_learn" aria-current="page" href="#">Learn</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="nav_quiz" aria-current="page" href="#">Quiz</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link disabled">Disabled</a>
+          </li> -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown_systems" data-bs-toggle="dropdown" aria-expanded="false">Systems</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+              <li><a class="dropdown-item" href="#">Engine</a></li>
+              <li><a class="dropdown-item" href="#">Break system</a></li>
+              <li><a class="dropdown-item" href="#">Suspension system</a></li>
+              <li><a class="dropdown-item" href="#">Differential</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 collapse navbar-collapse justify-content-end">
+          <li class="nav-item"></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown_language" data-bs-toggle="dropdown" aria-expanded="false">Language</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+              <li><a class="dropdown-item" href="#"><span class="flag-icon flag-icon-gb"></span> English</a></li>
+              <li><a class="dropdown-item" href="#"><span class="flag-icon flag-icon-gr"></span> Greek</a></li>
+            </ul>
+          </li>
+          
+          <li class="nav-item">
+            <button type="button" class="btn btn-primary btn-small">Log in</button>
+          </li>
+        <!-- <form>
+          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+        </form> -->
+      </ul>
+      </div>
+    </div>
+  </nav>
+</main>
+
+<!-- https://smallseotools.com/text-to-image/ -->
+
+    <!--Grid row-->
+    <div class="row d-flex justify-content-center">
+      <!--Grid column-->
+      <div class="col-md-8">
+        
+      <div id="home_container">
+        <h1>Hello!</h1>
+        <p>This is a tool for learning about different vehicle systems.</p>
+      </div>
+
+      <div id="learn_container">
+          <h1>Learn: The Differential</h1>
+          <hr>
+          <h4>What is the differential?</h4>
+          <p>A differential is a gear train with three drive shafts that has the property that the rotational speed of one shaft is the average of the speeds of the others, or a fixed multiple of that average.</p>
+          <br>
+          <div class="text-center">
+            <!-- <map name="differential_map">
+              <area shape="rect" coords="34,44,270,350" href="" onmouseover="differentialPart()">
+            </map> -->
+            
+            <div class="img_container">
+            <div class="container">
+              <img src="./images/differential/differential.JPG" class="learn_img" alt="Differntial" usemap="#differential_map">
+              <button class="diff1_btn btn-danger">O</button>
+              <button class="diff2_btn btn-danger"  data-container="body" data-toggle="popover" title="This is the part A. The part A does this and this.">O</button>
+            </div>
+            </div>
+          </div>
+          <br>
+          <h4>How the differential works?</h4>
+          <p>The differential assembly transmits the torque from the driveshaft or transmission to the axles. It also affects the maximum torque or speed available to the wheels.</p>
+          <p>The differential also serves the important role of allowing the left and right wheels to turn at different speeds, and this is a function crucial to safe operation in turns. When the vehicle turns a corner, the inner wheel slows and the outer wheel increases in speed to compensate. This difference in rotational speed causes the pinion gears to “walk” around the slower side gear.</p>
+            
+        </div>
+
+      <div id="quiz_container"> 
+        <h1>Quiz: The Differential</h1>
+        
+        <hr>
+        <h4>Match the Differential's components</h4>
+        <p>Drag and drop the images to the correct order to form the differential</p>
+        
+        <div class="row">
+          <div class="col-md-5"> </div>
+          <div id="div_dest1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+          <div id="div_dest2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+        <div class="row">
+        <div class="col-md-4"> </div>
+        <div id="div_dest3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+          <div id="div_dest4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+          <div id="div_dest5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+        <div class="row">
+          <div class="col-md-5"> </div>
+          <div id="div_dest6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+        <br>
+        <div class="row">
+          <div id="div_src1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="./images/differential/differential1b.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
+          </div>
+          <div id="div_src2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="./images/differential/differential1tt.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
+          </div>
+          <div id="div_src4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="./images/differential/differential1t.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
+          </div>
+          <div id="div_src5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="./images/differential/differential2.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
+          </div>
+          <div id="div_src6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="./images/differential/differential3.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
+          </div>
+          <div id="div_src3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <img src="./images/differential/differential1.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
+          </div>
+           </div>
+      </div>  
+    <!--Grid column-->
+    </div>
+  <!--Grid row-->
+  </div>
+  </body>
+</html>
