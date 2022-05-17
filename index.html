@@ -1,191 +1,597 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
-    <title>WSS551 Course Project</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/navbars/">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="" />
+  <meta name="author" content="Marios Pafitis, Vasileios Samaras" />
+  <meta name="generator" content="Hugo 0.88.1" />
+  <title>WSS551 Course Project</title>
 
-    
-    <!-- Bootstrap core CSS -->
-  <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet"> 
-  <script src="./assets/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/navbars/" />
+
+  <!-- Bootstrap core CSS -->
+  <link href="/bootstrap_css/bootstrap.min.css" rel="stylesheet" />
+  <script src="/bootstrap_js/bootstrap.bundle.min.js"></script>
+  <!-- <link href="./dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="./dist/js/bootstrap.bundle.min.js"></script> -->
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
-  
+
   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
- 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">
-  
-  <script src="navigation.js"></script>
 
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css" />
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+
+  <!-- Custom styles for this template -->
+  <link href="/css/navbar.css" rel="stylesheet" />
+  <link href="/css/images.css" rel="stylesheet" />
+  <link href="/css/differential.css" rel="stylesheet" />
+
+  <!-- <script src="/js/navigation.js"></script> -->
+  <script src="/js/drag_and_drop.js"></script>
+  <script src="/js/learn_differential.js"></script>
+</head>
+
+<body>
+  <script>
+    var app = angular.module("myApp", []);
+    app.controller("appCtrl", function ($scope, $http) {
+
+      // Default
+      $scope.select_container = false;
+      $scope.select_container_quiz = false;
+      $scope.select_container_learn = false;
+      $scope.login_tabs_container = false;
+      $scope.login_button_container = true;
+      $scope.logout_button_container = false;
+      $scope.register_container = false;
+      $scope.login_container = false;
+      $scope.home_container = true;
+      $scope.learn_container = false;
+      $scope.quiz_container = false;
+      $scope.info_container = false;
+      $scope.learn_content_container = false;
+      $scope.first_name = "";
+      $scope.systems = [];
+      // $scope.systems = [
+      //   { model: "Engine", id: 1 },
+      //   { model: "Break system", id: 2 },
+      //   { model: "Suspension system", id: 3 },
+      //   { model: "Differential", id: 4 }
+      // ];
+
+      // The systems are fetched when the page is loaded
+      $http.get("/listSystems").then(function (data) {
+        $scope.systems = data.data;
+        $scope.selected_system_id = $scope.systems[0].id;
+        console.log(data.data);
+      });
+
+      $scope.login = function () {
+        var input = {};
+        input["password"] = $scope.password;
+        input["email"] = $scope.email;
+
+        console.log("email: " + input["email"]);
+        console.log("password: " + input["password"]);
+
+        $http.post("/login", input).then(function (data) {
+          if (data.data === "") {
+            $scope.msgtext = "User not found!";
+          } else {
+            $scope.nav_home();
+            /*        $scope.jsontext = data.data;*/
+            $scope.first_name = data.data.first_name;
+            $scope.last_name = data.data.last_name;
+            $scope.account_type = data.data.account_type;
+            $scope.email = data.data.email;
+            $scope.msgtext = "User successfully logged in!";
+          }
+          console.log($scope.msgtext);
+        });
+      };
+
+      $scope.register = function () {
+        var input = {};
+        input["first_name"] = $scope.first_name;
+        input["last_name"] = $scope.last_name;
+        input["email"] = $scope.email;
+        input["password"] = $scope.password;
+        input["account_type"] = $scope.account_type;
+        $scope.msgtext = "Use this form to register";
+
+        $http.post("/register", input).then(function (data) {
+          if (data.data === "") {
+            $scope.msgtext = "Something went wrong.";
+          } else {
+            $scope.msgtext = "User added successfully.";
+            $scope.nav_login();
+            $scope.email = null;
+            $scope.password = null;
+            // $scope.msgtext = "Use this form to login";
+          }
+        });
+      };
+
+      $scope.getLecture = function () {
+        console.log("Selected system id: " + $scope.selected_system_id);
+        $http
+          .get("/getLecture/" + $scope.selected_system_id)
+          .then(function (data) {
+            console.log(data.data);
+            $scope.lecture = data.data[0];
+            $scope.learn_content_container = true;
+          });
+      };
+
+      $scope.getQuiz = function () {
+        console.log($scope.selected_system_id);
+        $http
+          .get("/getQuiz/" + $scope.selected_system_id.id)
+          .then(function (data) {
+            $scope.quiz = data.data;
+            console.log(data.data);
+          });
+      };
+
+
+      // =============== DOM management ===============
+
+      // Login page
+      $scope.nav_login = function () {
+        $scope.msgtext = "Use this form to login";
+        $scope.select_container = false;
+        $scope.select_container_quiz = false;
+        $scope.select_container_learn = false;
+        $scope.login_tabs_container = false;
+        $scope.login_button_container = false;
+        $scope.logout_button_container = false;
+        $scope.register_container = false;
+        $scope.login_container = true;
+        $scope.home_container = false;
+        $scope.learn_container = false;
+        $scope.quiz_container = false;
+        $scope.info_container = false;
+      };
+
+      // Register page
+      $scope.nav_register = function () {
+        $scope.select_container = false;
+        $scope.select_container_quiz = false;
+        $scope.select_container_learn = false;
+        $scope.login_tabs_container = false;
+        $scope.login_button_container = false;
+        $scope.logout_button_container = false;
+        $scope.register_container = true;
+        $scope.login_container = false;
+        $scope.home_container = false;
+        $scope.learn_container = false;
+        $scope.quiz_container = false;
+        $scope.info_container = false;
+      };
+
+      // Got to home page after login
+      // $scope.nav_start = function () {
+      //   $scope.select_container = false;
+      //   $scope.select_container_quiz = false;
+      //   $scope.select_container_learn = false;
+      //   $scope.login_tabs_container = true;
+      //   $scope.login_button_container = false;
+      //   $scope.logout_button_container = false;
+      //   $scope.register_container = false;
+      //   $scope.login_container = false;
+      //   $scope.home_container = true;
+      //   $scope.learn_container = false;
+      //   $scope.quiz_container = false;
+      //   $scope.info_container = false;
+      // };
+
+      $scope.nav_learn = function () {
+        $scope.select_container = true;
+        $scope.select_container_quiz = false;
+        $scope.select_container_learn = true;
+        $scope.login_tabs_container = true;
+        $scope.login_button_container = false;
+        $scope.logout_button_container = true;
+        $scope.register_container = false;
+        $scope.login_container = false;
+        $scope.home_container = false;
+        $scope.learn_container = true;
+        $scope.quiz_container = false;
+        $scope.info_container = false;
       }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
+      $scope.nav_quiz = function () {
+        $scope.select_container = true;
+        $scope.select_container_quiz = true;
+        $scope.select_container_learn = false;
+        $scope.login_tabs_container = true;
+        $scope.login_button_container = false;
+        $scope.logout_button_container = true;
+        $scope.register_container = false;
+        $scope.login_container = false;
+        $scope.home_container = false;
+        $scope.learn_container = false;
+        $scope.quiz_container = true;
+        $scope.info_container = false;
+      }
+
+
+      $scope.nav_home = function () {
+        $scope.select_container = false;
+        $scope.select_container_quiz = false;
+        $scope.select_container_learn = false;
+        $scope.login_tabs_container = true;
+        $scope.login_button_container = false;
+        $scope.logout_button_container = true;
+        $scope.register_container = false;
+        $scope.login_container = false;
+        $scope.home_container = true;
+        $scope.learn_container = false;
+        $scope.quiz_container = false;
+        $scope.info_container = false;
+      }
+
+
+      $scope.nav_logout = function () {
+        $scope.select_container = false;
+        $scope.select_container_quiz = false;
+        $scope.select_container_learn = false;
+        $scope.login_tabs_container = false;
+        $scope.login_button_container = true;
+        $scope.logout_button_container = false;
+        $scope.register_container = false;
+        $scope.login_container = false;
+        $scope.home_container = true;
+        $scope.learn_container = false;
+        $scope.quiz_container = false;
+        $scope.info_container = false;
+        $scope.learn_content_container = false;
+      };
+
+      $scope.evaluate_diff = function () {
+        var src_elements = [];
+        var dest_elements = [];
+        for (let i = 1; i <= 6; i++) {
+          src_elements[i - 1] = document.getElementById("src-diff_" + i);
+          dest_elements[i - 1] = document.getElementById("dest-diff_" + i);
         }
-      }
-    </style>
-    
-    <!-- Custom styles for this template -->
-    <link href="navbar.css" rel="stylesheet">
-    <link href="images.css" rel="stylesheet">
-    <link href="differential.css" rel="stylesheet">
-    
-    <script src="drag_and_drop.js"></script>
-    <script src="learn_differential.js"></script>
-  </head>
-  <body>
-    
-<main>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
-    <div class="container-xl">
-      <a class="navbar-brand" id="nav_home" href="#">TheMech</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        console.log(src_elements);
+        console.log(dest_elements);
+        var score = 0;
+        for (let i = 0; i < dest_elements.length; i++) {
+          var dest_id = dest_elements[i].getAttribute("id");
+          console.log(dest_id);
+          var childNodes = dest_elements[i].childNodes;
+          if (childNodes.length > 0) {
+            var src_id = childNodes[1].getAttribute("id");
+            console.log(src_id);
+            if (dest_id.split("_")[1] == src_id.split("_")[1]) {
+              console.log("correct");
+              score += 100 / dest_elements.length;
+            } else {
+              console.log("not correct");
+            }
+          }
+        }
+        console.log("score: " + score);
+      };
+    });
+  </script>
 
-      <div class="collapse navbar-collapse" id="navbarsExample07XL">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" id="nav_learn" aria-current="page" href="#">Learn</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="nav_quiz" aria-current="page" href="#">Quiz</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link disabled">Disabled</a>
-          </li> -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown_systems" data-bs-toggle="dropdown" aria-expanded="false">Systems</a>
-            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
-              <li><a class="dropdown-item" href="#">Engine</a></li>
-              <li><a class="dropdown-item" href="#">Break system</a></li>
-              <li><a class="dropdown-item" href="#">Suspension system</a></li>
-              <li><a class="dropdown-item" href="#">Differential</a></li>
-            </ul>
-          </li>
-        </ul>
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 collapse navbar-collapse justify-content-end">
-          <li class="nav-item"></li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown_language" data-bs-toggle="dropdown" aria-expanded="false">Language</a>
-            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
-              <li><a class="dropdown-item" href="#"><span class="flag-icon flag-icon-gb"></span> English</a></li>
-              <li><a class="dropdown-item" href="#"><span class="flag-icon flag-icon-gr"></span> Greek</a></li>
-            </ul>
-          </li>
-          
-          <li class="nav-item">
-            <button type="button" class="btn btn-primary btn-small">Log in</button>
-          </li>
-        <!-- <form>
-          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-        </form> -->
-      </ul>
-      </div>
-    </div>
-  </nav>
-</main>
+  <div ng-app="myApp" ng-controller="appCtrl">
+    <main>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
+        <div class="container-xl">
+          <div ng-show="login_tabs_container">
+            <a class="navbar-brand" id="nav_home" href="#" ng-click="nav_home()">TheMech</a>
+          </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL"
+            aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
 
-<!-- https://smallseotools.com/text-to-image/ -->
+          <div class="collapse navbar-collapse" id="navbarsExample07XL">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <div ng-show="login_tabs_container">
+                  <a class="nav-link" id="nav_learn" aria-current="page" href="#" ng-click="nav_learn()">Learn</a>
+                </div>
+              </li>
+              <li class="nav-item">
+
+                <div ng-show="login_tabs_container">
+                  <a class="nav-link" id="nav_quiz" aria-current="page" href="#" ng-click="nav_quiz()">Quiz</a>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <div ng-show="login_tabs_container">
+                  <div ng-show="select_container">
+                    <select class="form-select" ng-model="selected_system_id">
+                      <option ng-repeat="x in systems" ng-value="{{x.id}}">
+                        {{x.model}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <div ng-show="login_tabs_container">
+                  <div ng-show="select_container_learn">
+                    <button type="button" class="btn btn-primary btn-small" ng-click="getLecture()">
+                      Learn System
+                    </button>
+                  </div>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <div ng-show="login_tabs_container">
+                  <div ng-show="select_container_quiz">
+                    <button type="button" class="btn btn-primary btn-small" ng-click="getQuiz()">
+                      Test System
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <ul class="
+                navbar-nav
+                me-auto
+                mb-2 mb-lg-0
+                collapse
+                navbar-collapse
+                justify-content-end
+              ">
+              <li class="nav-item"></li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="dropdown_language" data-bs-toggle="dropdown"
+                  aria-expanded="false">Language</a>
+                <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+                  <li>
+                    <a class="dropdown-item" href="#"><span class="flag-icon flag-icon-gb"></span> English</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#"><span class="flag-icon flag-icon-gr"></span> Greek</a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <div ng-show="login_button_container">
+                  <button type="button" class="btn btn-primary btn-small" ng-click="nav_login()">
+                    Log in
+                  </button>
+                </div>
+                <div ng-show="logout_button_container">
+                  <button type="button" class="btn btn-secondary btn-small" ng-click="nav_logout()">
+                    Logout
+                  </button>
+                </div>
+              </li>
+              <!-- <form>
+          <input class=" form-control" type="text" placeholder="Search" aria-label="Search">
+                  </form> -->
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </main>
+
+    <!-- https://smallseotools.com/text-to-image/ -->
 
     <!--Grid row-->
     <div class="row d-flex justify-content-center">
       <!--Grid column-->
       <div class="col-md-8">
-        
-      <div id="home_container">
-        <h1>Hello!</h1>
-        <p>This is a tool for learning about different vehicle systems.</p>
-      </div>
+        <div ng-show="home_container">
+          <h1>Hello {{first_name}}!</h1>
+          <p>This is a tool for learning about different vehicle systems.</p>
+        </div>
 
-      <div id="learn_container">
-          <h1>Learn: The Differential</h1>
-          <hr>
-          <h4>What is the differential?</h4>
-          <p>A differential is a gear train with three drive shafts that has the property that the rotational speed of one shaft is the average of the speeds of the others, or a fixed multiple of that average.</p>
-          <br>
-          <div class="text-center">
-            <!-- <map name="differential_map">
+        <div ng-show="register_container">
+          <h1>Register</h1>
+          <form>
+            <div class="me-auto pe-auto bg-light d-inline-block shadow-sm">
+
+              <label>Email</label>
+              <input ng-model="email" type="email" placeholder="Enter email"
+                class="form-control me-auto pe-auto d-block shadow-sm" aria-describedby="emailHelp" required />
+              <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+              <br>
+              <label>First name</label>
+              <input ng-model="first_name" type="text" placeholder="Enter first name"
+                class="form-control me-auto pe-auto d-block shadow-sm" />
+
+              <label>Last name</label>
+              <input ng-model="last_name" type="text" placeholder="Enter last name"
+                class="form-control me-auto pe-auto d-block shadow-sm" />
+
+              <label>Account Type</label>
+              <select class="form-control pe-auto d-block shadow-sm" id="account_type_sel" ng-model="account_type"
+                type="text" required>
+                <option value="" selected disabled hidden>Choose here</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+              </select>
+
+              <label>Password</label>
+              <input ng-model="password" type="password" placeholder="Enter password"
+                class="form-control me-auto pe-auto d-block shadow-sm" required />
+
+              <br>
+              <p>{{msgtext}}</p>
+              <button class="btn btn-outline-primary btn-sm shadow" ng-click="register()">
+                Register
+              </button>
+              <hr>
+              <a href="" ng-click="nav_login()">Already Registered?</a>
+            </div>
+          </form>
+        </div>
+
+        <div ng-show="login_container">
+          <h1>Log In</h1>
+          <form>
+            <div class="me-auto pe-auto bg-light d-inline-block shadow-sm">
+              <label>Email</label>
+              <input ng-model="email" type="email" placeholder="Enter email"
+                class="form-control me-auto pe-auto d-block shadow-sm" required />
+              <label>Password</label>
+              <input ng-model="password" type="password" placeholder="Enter password"
+                class="form-control me-auto pe-auto d-block shadow-sm" required />
+              <br>
+              <p>{{msgtext}}</p>
+              <button class="btn btn-outline-primary btn-sm shadow" ng-click="login()">
+                Login
+              </button>
+              <hr>
+              <a href="" ng-click="nav_register()">Not Registered?</a>
+            </div>
+          </form>
+          <!-- <div class="img_container">
+          <img src="images/theMech.png" class="mx-auto d-block" alt="TheMech" />
+        </div> -->
+        </div>
+
+        <!-- <div ng-show="info_container">
+          <div class="me-auto pe-auto bg-light d-inline-block shadow-sm">
+             <p>{{jsontext}}</p>
+            <p>{{msgtext}}</p>
+            <button class="btn btn-outline-success btn-sm shadow" ng-click="nav_start()">
+              Start
+            </button>
+          </div>
+        </div> -->
+
+        <div ng-show="learn_container">
+          <div ng-show="learn_content_container">
+            <!-- The Differential -->
+            <h1>Learn: The {{lecture.subject}}!</h1>
+            <hr>
+            <h4>What is the {{lecture.subject}}?</h4>
+            <p> {{lecture.definition}} </p>
+            <br>
+
+            <div class="text-center">
+              <!-- <map name="differential_map">
               <area shape="rect" coords="34,44,270,350" href="" onmouseover="differentialPart()">
             </map> -->
-            
-            <div class="img_container">
-            <div class="container">
-              <img src="./assets/images/differential/differential.JPG" class="learn_img" alt="Differntial" usemap="#differential_map">
-              <button class="diff1_btn btn-danger">O</button>
-              <button class="diff2_btn btn-danger"  data-container="body" data-toggle="popover" title="This is the part A. The part A does this and this.">O</button>
+              <!-- usemap="#differential_map"  -->
+              <div class="img_container">
+                <div class="container">
+                  <img src="{{lecture.img_path}}" class="learn_img" alt="{{lecture.subject}}" />
+                  <div ng-repeat="x in lecture.parts">
+                    <button id="{{x.class}}" class="{{x.class}} hov_btn hoverable btn-danger" data-container="body"
+                      data-toggle="popover" title="{{x.label}}">O</button>
+                  </div>
+                  <!-- <button class="diff1_btn btn-danger" data-container="body" data-toggle="popover"
+                    title="This is the part B. The part B does this and this.">
+                    O
+                  </button>
+                  <button class="diff2_btn btn-danger" data-container="body" data-toggle="popover"
+                    title="This is the part A. The part A does this and this.">
+                    O
+                  </button> -->
+                </div>
+              </div>
             </div>
+            <br>
+            <h4>How the {{lecture.subject}} works?</h4>
+            <p ng-repeat="x in lecture.descriptions"> {{x}} </p>
+          </div>
+        </div>
+
+        <div ng-show="quiz_container">
+          <h1>Quiz: The Differential</h1>
+
+          <hr />
+          <h4>Match the Differential's components</h4>
+          <p>
+            Drag and drop the images to the correct order to form the
+            differential
+          </p>
+
+          <div class="row">
+            <div class="col-md-5"></div>
+            <div id="dest-diff_1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </div>
+            <div id="dest-diff_2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4"></div>
+            <div id="dest-diff_3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </div>
+            <div id="dest-diff_4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </div>
+            <div id="dest-diff_5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5"></div>
+            <div id="dest-diff_6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
             </div>
           </div>
           <br>
-          <h4>How the differential works?</h4>
-          <p>The differential assembly transmits the torque from the driveshaft or transmission to the axles. It also affects the maximum torque or speed available to the wheels.</p>
-          <p>The differential also serves the important role of allowing the left and right wheels to turn at different speeds, and this is a function crucial to safe operation in turns. When the vehicle turns a corner, the inner wheel slows and the outer wheel increases in speed to compensate. This difference in rotational speed causes the pinion gears to “walk” around the slower side gear.</p>
-            
+          <div class="row">
+            <div id="div_src1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <img src="./images/differential/differential1b.JPG" class="dragable_img" draggable="true"
+                ondragstart="drag(event)" id="src-diff_1" />
+            </div>
+            <div id="div_src2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <img src="./images/differential/differential1tt.JPG" class="dragable_img" draggable="true"
+                ondragstart="drag(event)" id="src-diff_2" />
+            </div>
+            <div id="div_src4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <img src="./images/differential/differential1t.JPG" class="dragable_img" draggable="true"
+                ondragstart="drag(event)" id="src-diff_4" />
+            </div>
+            <div id="div_src5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <img src="./images/differential/differential2.JPG" class="dragable_img" draggable="true"
+                ondragstart="drag(event)" id="src-diff_5" />
+            </div>
+            <div id="div_src6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <img src="./images/differential/differential3.JPG" class="dragable_img" draggable="true"
+                ondragstart="drag(event)" id="src-diff_6" />
+            </div>
+            <div id="div_src3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <img src="./images/differential/differential1.JPG" class="dragable_img" draggable="true"
+                ondragstart="drag(event)" id="src-diff_3" />
+            </div>
+          </div>
+          <br>
+          <button class="btn btn-primary" type="button" ng-click="evaluate_diff()">Evaluate</button>
         </div>
-
-      <div id="quiz_container"> 
-        <h1>Quiz: The Differential</h1>
-        
-        <hr>
-        <h4>Match the Differential's components</h4>
-        <p>Drag and drop the images to the correct order to form the differential</p>
-        
-        <div class="row">
-          <div class="col-md-5"> </div>
-          <div id="div_dest1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-          <div id="div_dest2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        </div>
-        <div class="row">
-        <div class="col-md-4"> </div>
-        <div id="div_dest3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-          <div id="div_dest4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-          <div id="div_dest5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        </div>
-        <div class="row">
-          <div class="col-md-5"> </div>
-          <div id="div_dest6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        </div>
-        <br>
-        <div class="row">
-          <div id="div_src1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <img src="./assets/images/differential/differential1b.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
-          </div>
-          <div id="div_src2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <img src="./assets/images/differential/differential1tt.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
-          </div>
-          <div id="div_src4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <img src="./assets/images/differential/differential1t.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
-          </div>
-          <div id="div_src5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <img src="./assets/images/differential/differential2.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
-          </div>
-          <div id="div_src6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <img src="./assets/images/differential/differential3.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
-          </div>
-          <div id="div_src3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <img src="./assets/images/differential/differential1.JPG" class="dragable_img" draggable="true" ondragstart="drag(event)" id="drag1">
-          </div>
-           </div>
-      </div>  
-    <!--Grid column-->
+        <!--Grid column-->
+      </div>
+      <!--Grid row-->
     </div>
-  <!--Grid row-->
   </div>
-  </body>
+</body>
+
 </html>
