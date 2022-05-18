@@ -54,6 +54,10 @@ router.post("/register", function (req, res) {
     console.log("value" + value);
     query[key] = value;
 
+    var key = "systems_progress";
+    var value = { quizes: [], lectures: [] };
+    query[key] = value;
+
     console.log("Query: " + JSON.stringify(query));
 
     dbo.collection("users").insertOne(query, function (err, data) {

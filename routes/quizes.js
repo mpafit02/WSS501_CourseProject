@@ -63,4 +63,60 @@ router.delete("/deleteQuiz/:id", function (req, res, next) {
   next(); // pass control to the next handler
 });
 
+router.get("/getQuiz/:id", function (req, res) {
+  var MongoClient = mongodb.MongoClient;
+  var url = "mongodb://localhost:27017/";
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("wss551");
+    var key = "id";
+    var value = parseInt(req.params.id);
+    var query = {};
+    query[key] = value;
+    console.log(query);
+    dbo
+      .collection("quizes")
+      .find(query)
+      .toArray(function (err, data) {
+        if (err) throw err;
+        console.log(data);
+        res.end(JSON.stringify(data));
+        db.close();
+      });
+  });
+});
+
+router.post("/completeQuiz", function (req, res) {
+  console.log("quiz_id: " + req.body.quiz_id);
+  console.log("model: " + req.body.model);
+  console.log("email: " + req.body.email);
+  console.log("score: " + req.body.score);
+
+  var MongoClient = mongodb.MongoClient;
+  var url = "mongodb://localhost:27017/";
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("wss551");
+    // You can accept the same input in the form of JSON using Ajax call
+    // but for demonstration purpose, we are hard-coding it here.
+
+    var query = { email: req.body.email };
+    var newvalues = {
+      $push: {
+        "systems_progress.quizes": {
+          id: req.body.quiz_id,
+          model: req.body.model,
+          score: req.body.score,
+        },
+      },
+    };
+    dbo.collection("users").updateOne(query, newvalues, function (err, data) {
+      if (err) throw err;
+      console.log("1 document updated");
+      res.end(JSON.stringify(data)); // send results back to client for display
+      db.close();
+    });
+  });
+});
 module.exports = router;

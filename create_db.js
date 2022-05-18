@@ -26,27 +26,37 @@ MongoClient.connect(url, function (err, db) {
   var myusers = [
     {
       id: 1,
+      email: "marios@gmail.com",
       first_name: "Marios",
       last_name: "Pafitis",
       password: "1234",
       account_type: "student",
-      quizes: [
-        {
-          id: 1,
-          grade: 80,
-          answers: [{ id: 1, answer: "first answer of user" }],
-        },
-      ],
-      lectures: [],
+      systems_progress: {
+        quizes: [
+          {
+            id: 1,
+            model: "Brake system",
+            grade: 80,
+            answers: [{ id: 1, answer: "first answer of user" }],
+          },
+          {
+            id: 2,
+            model: "Suspension system",
+            grade: 90,
+            answers: [{ id: 1, answer: "first answer of user" }],
+          },
+        ],
+        lectures: [{ id: 1, model: "Brake system" }],
+      },
     },
     {
       id: 2,
+      email: "vasilis@gmail.com",
       first_name: "Vasileios",
       last_name: "Samaras",
       password: "5678",
       account_type: "teacher",
-      quizes: [],
-      lectures: [],
+      systems_progress: { quizes: [], lectures: [] },
     },
   ];
 
@@ -68,7 +78,27 @@ MongoClient.connect(url, function (err, db) {
   var myquizes = [
     {
       id: 1,
+      subject: "Brake system",
+      instruction: "Drag and drop the components in the correct position.",
+      exercises: [
+        { question: "first question", answer: "first answer" },
+        { question: "second question", answer: "second answer" },
+      ],
+    },
+    {
+      id: 2,
+      subject: "Suspension system",
+      instruction: "Drag and drop the components in the correct position.",
+      exercises: [
+        { question: "first question", answer: "first answer" },
+        { question: "second question", answer: "second answer" },
+        { question: "third question", answer: "third answer" },
+      ],
+    },
+    {
+      id: 3,
       subject: "Differential",
+      instruction: "Drag and drop the components in the correct position.",
       exercises: [
         { question: "first question", answer: "first answer" },
         { question: "second question", answer: "second answer" },

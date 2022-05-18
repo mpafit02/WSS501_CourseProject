@@ -3,6 +3,7 @@ var express = require("express"); // a minimal and flexible web application fram
 var app = express(); // enables interacting with the file system
 var fs = require("fs"); // The Node.js file system module allows for work with the computer's file system
 var bodyParser = require("body-parser"); // parses the JSON, buffer, string and URL encoded data submitted
+
 // var { MongoClient } = require("mongodb"); // enables connectivity with an open source, non-relational database
 var __dirname = "./";
 

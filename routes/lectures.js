@@ -26,44 +26,78 @@ router.get("/listLectures", function (req, res, next) {
   });
 });
 
-router.post("/addLecture", function (req, res, next) {
-  var MongoClient = mongodb.MongoClient;
-  var url = "mongodb://localhost:27017/";
-  MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("wss551");
-    // You can accept the same input in the form of JSON using Ajax call
-    // but for demonstration purpose, we are hard-coding it here.
-    var lecture = {
-      subject: "other",
-      description: "Another system of the car.",
-      account_type: "teacher",
-      id: 2,
-    };
-    dbo.collection("lectures").insertOne(lecture, function (err, data) {
-      if (err) throw err;
-      console.log("1 document inserted");
-      res.end(JSON.stringify(data));
-      // send the results back to the client for display db.close();
-    });
-  });
-});
+router.post(
+  "/addLecture",
+  function (req, res, next) {
+    console.log("id: " + req.body.id);
+    console.log("subject: " + req.body.subject);
+    console.log("definition: " + req.body.definition);
+    console.log("description: " + req.body.description);
+    console.log("img_path: " + req.body.img_path);
+    console.log("parts: " + req.body.parts);
 
-router.delete("/deleteLecture/:id", function (req, res, next) {
-  var MongoClient = mongodb.MongoClient;
-  var url = "mongodb://localhost:27017/";
-  MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("wss551");
-    var query = { id: 2 };
-    dbo.collection("lectures").deleteOne(lecture, function (err, data) {
+    var MongoClient = mongodb.MongoClient;
+    var url = "mongodb://localhost:27017/";
+
+    MongoClient.connect(url, function (err, db) {
       if (err) throw err;
-      console.log("1 document deleted");
-      res.end(JSON.stringify(data)); // send results back to client for display
-      db.close();
+      var dbo = db.db("wss551");
+      // You can accept the same input in the form of JSON using Ajax call
+      // but for demonstration purpose, we are hard-coding it here.
+      var quiz = {
+        id: req.body.id,
+        subject: req.body.subject,
+        definition: req.body.definition,
+        descriptions: [req.body.description],
+        img_path: req.body.img_path,
+        parts: req.body.parts,
+      };
+
+      dbo.collection("lectures").insertOne(quiz, function (err, data) {
+        if (err) throw err;
+        console.log("1 document inserted in lectures");
+        // send the results back to the client for display db.close();
+      });
     });
-  });
-});
+    next();
+  },
+  function (req, res, next) {
+    var MongoClient = mongodb.MongoClient;
+    var url = "mongodb://localhost:27017/";
+
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      var dbo = db.db("wss551");
+
+      var system = {
+        id: req.body.id,
+        model: req.body.subject,
+      };
+
+      dbo.collection("systems").insertOne(system, function (err, data) {
+        if (err) throw err;
+        console.log("1 document inserted in systems");
+        res.end(JSON.stringify(data));
+      });
+    });
+  }
+);
+
+// router.delete("/deleteLecture/:id", function (req, res, next) {
+//   var MongoClient = mongodb.MongoClient;
+//   var url = "mongodb://localhost:27017/";
+//   MongoClient.connect(url, function (err, db) {
+//     if (err) throw err;
+//     var dbo = db.db("wss551");
+//     var query = { id: 2 };
+//     dbo.collection("lectures").deleteOne(lecture, function (err, data) {
+//       if (err) throw err;
+//       console.log("1 document deleted");
+//       res.end(JSON.stringify(data)); // send results back to client for display
+//       db.close();
+//     });
+//   });
+// });
 
 router.get("/getLecture/:id", function (req, res) {
   var MongoClient = mongodb.MongoClient;
@@ -85,6 +119,38 @@ router.get("/getLecture/:id", function (req, res) {
         res.end(JSON.stringify(data));
         db.close();
       });
+  });
+});
+
+router.post("/completeLecture", function (req, res) {
+  console.log("lecture_id: " + req.body.lecture_id);
+  console.log("model: " + req.body.model);
+  console.log("email: " + req.body.email);
+
+  var MongoClient = mongodb.MongoClient;
+  var url = "mongodb://localhost:27017/";
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("wss551");
+    // You can accept the same input in the form of JSON using Ajax call
+    // but for demonstration purpose, we are hard-coding it here.
+
+    var query = { email: req.body.email };
+    var newvalues = {
+      $push: {
+        "systems_progress.lectures": {
+          id: req.body.lecture_id,
+          model: req.body.model,
+        },
+      },
+    };
+    dbo.collection("users").updateOne(query, newvalues, function (err, data) {
+      if (err) throw err;
+      console.log("1 document updated");
+      res.end(JSON.stringify(data)); // send results back to client for display
+      db.close();
+    });
   });
 });
 

@@ -72,9 +72,22 @@
       $scope.learn_container = false;
       $scope.quiz_container = false;
       $scope.info_container = false;
+      $scope.performance_container = false;
       $scope.learn_content_container = false;
+      $scope.quiz_content_container = false;
       $scope.first_name = "";
       $scope.systems = [];
+      $scope.systems_progress = [];
+      $scope.progress_lectures = 0;
+      $scope.progress_quizes = 0;
+      $scope.no_lectures_yet = false;
+      $scope.no_quizes_yet = false;
+      $scope.lecture_button_disabled = false;
+      $scope.quiz_button_disabled = false;
+      $scope.is_student = true;
+      $scope.diff_quiz = true;
+      $scope.msgtext_create = "";
+
       // $scope.systems = [
       //   { model: "Engine", id: 1 },
       //   { model: "Break system", id: 2 },
@@ -82,78 +95,292 @@
       //   { model: "Differential", id: 4 }
       // ];
 
-      // The systems are fetched when the page is loaded
-      $http.get("/listSystems").then(function (data) {
-        $scope.systems = data.data;
-        $scope.selected_system_id = $scope.systems[0].id;
-        console.log(data.data);
-      });
+      // $http.get("/getProgress").then(function (data) {
+      //   $scope.systems_progress = data.data;
+      //   $scope.progress_lectures = ($scope.systems_progress.lectures.length / $scope.systems.length) * 100;
+      //   $scope.progress_quizes = ($scope.systems_progress.quizes.length / $scope.systems.length) * 100;
+      //   console.log(data.data);
+      // });
 
       $scope.login = function () {
-        var input = {};
-        input["password"] = $scope.password;
-        input["email"] = $scope.email;
+        var isValid = document.forms['login_form'].reportValidity();
+        console.log(isValid);
 
-        console.log("email: " + input["email"]);
-        console.log("password: " + input["password"]);
+        if (isValid) {
 
-        $http.post("/login", input).then(function (data) {
-          if (data.data === "") {
-            $scope.msgtext = "User not found!";
-          } else {
-            $scope.nav_home();
-            /*        $scope.jsontext = data.data;*/
-            $scope.first_name = data.data.first_name;
-            $scope.last_name = data.data.last_name;
-            $scope.account_type = data.data.account_type;
-            $scope.email = data.data.email;
-            $scope.msgtext = "User successfully logged in!";
-          }
-          console.log($scope.msgtext);
-        });
+          // The systems are fetched when the page is loaded
+          $http.get("/listSystems").then(function (data) {
+            $scope.systems = data.data;
+            $scope.selected_system_id = $scope.systems[0].id;
+            console.log(data.data);
+          });
+
+          var input = {};
+
+          input["password"] = $scope.password;
+          input["email"] = $scope.email;
+
+          console.log("email: " + input["email"]);
+          console.log("password: " + input["password"]);
+
+          $http.post("/login", input).then(function (data) {
+            if (data.data === "") {
+              $scope.msgtext = "User not found!";
+            } else {
+              /*        $scope.jsontext = data.data;*/
+              $scope.user_id = data.data._id;
+              $scope.first_name = data.data.first_name;
+              $scope.last_name = data.data.last_name;
+              $scope.account_type = data.data.account_type;
+              $scope.email = data.data.email;
+              $scope.systems_progress = data.data.systems_progress;
+
+              console.log($scope.systems_progress);
+
+              $scope.progress_lectures = ($scope.systems_progress.lectures.length / $scope.systems.length) * 100;
+              $scope.progress_quizes = ($scope.systems_progress.quizes.length / $scope.systems.length) * 100;
+
+              if ($scope.systems_progress.quizes.length == 0) {
+                $scope.no_quizes_yet = true;
+              } else {
+                $scope.no_quizes_yet = false;
+              }
+
+              if ($scope.systems_progress.lectures.length == 0) {
+                $scope.no_lectures_yet = true;
+              } else {
+                $scope.no_lectures_yet = false;
+              }
+
+              $scope.msgtext = "User successfully logged in!";
+
+              if ($scope.account_type === "student") {
+                $scope.is_student = true;
+
+              } else if ($scope.account_type === "teacher") {
+                $scope.is_student = false;
+              }
+              $scope.nav_home();
+              document.forms['login_form'].reset();
+            }
+            console.log($scope.msgtext);
+          });
+
+          $scope.update_progress();
+        }
       };
 
       $scope.register = function () {
-        var input = {};
-        input["first_name"] = $scope.first_name;
-        input["last_name"] = $scope.last_name;
-        input["email"] = $scope.email;
-        input["password"] = $scope.password;
-        input["account_type"] = $scope.account_type;
-        $scope.msgtext = "Use this form to register";
+        var isValid = document.forms['register_form'].reportValidity();
+        console.log(isValid);
 
-        $http.post("/register", input).then(function (data) {
-          if (data.data === "") {
-            $scope.msgtext = "Something went wrong.";
-          } else {
-            $scope.msgtext = "User added successfully.";
-            $scope.nav_login();
-            $scope.email = null;
-            $scope.password = null;
-            // $scope.msgtext = "Use this form to login";
-          }
-        });
+        if (isValid) {
+          var input = {};
+          input["first_name"] = $scope.first_name;
+          input["last_name"] = $scope.last_name;
+          input["email"] = $scope.email;
+          input["password"] = $scope.password;
+          input["account_type"] = $scope.account_type;
+
+          $http.post("/register", input).then(function (data) {
+            if (data.data === "") {
+              $scope.msgtext = "Something went wrong.";
+            } else {
+              $scope.msgtext = "User added successfully.";
+              $scope.nav_login();
+              document.forms['register_form'].reset();
+              $scope.email = null;
+              $scope.password = null;
+              // $scope.msgtext = "Use this form to login";
+            }
+          });
+        }
+      };
+
+      $scope.addLecture = function () {
+        var isValid = document.forms['add_lecture_form'].reportValidity();
+        console.log(isValid);
+
+        if (isValid) {
+          var input = {};
+          input["id"] = $scope.new_lecture_id;
+          input["subject"] = $scope.new_lecture_subject;
+          input["definition"] = $scope.new_lecture_definition;
+          input["description"] = $scope.new_lecture_description;
+          input["img_path"] = "./images/noimage.jpg";
+          input["parts"] = [];
+
+
+          $http.post("/addLecture", input).then(function (data) {
+            if (data.data === "") {
+              $scope.msgtext = "Something went wrong.";
+            } else {
+              $scope.msgtext_create = "Lecture created successfully.";
+              document.forms['add_lecture_form'].reset();
+              // $scope.msgtext = "Use this form to login";
+            }
+          });
+        }
       };
 
       $scope.getLecture = function () {
         console.log("Selected system id: " + $scope.selected_system_id);
+        $scope.lecture_button_disabled = false;
         $http
           .get("/getLecture/" + $scope.selected_system_id)
           .then(function (data) {
+            $scope.learn_content_container = true;
             console.log(data.data);
             $scope.lecture = data.data[0];
-            $scope.learn_content_container = true;
+
+            // document.addEventListener("DOMContentLoaded", function (event) {
+            for (let i = 0; i < $scope.systems_progress.lectures.length; i++) {
+              if ($scope.selected_system_id == $scope.systems_progress.lectures[i].id) {
+                console.log($scope.selected_system_id + " " + $scope.systems_progress.lectures[i].id);
+                $scope.lecture_button_disabled = true;
+                break;
+                // document.getElementById("complete_btn_" + $scope.lecture.subject).disabled = true;
+                // document.getElementById("complete_btn_" + $scope.lecture.subject).innerText = "Already Learned"
+              }
+            }
+            // });
           });
       };
 
       $scope.getQuiz = function () {
-        console.log($scope.selected_system_id);
+        console.log("Selected system id: " + $scope.selected_system_id);
+        $scope.quiz_button_disabled = false;
         $http
-          .get("/getQuiz/" + $scope.selected_system_id.id)
+          .get("/getQuiz/" + $scope.selected_system_id)
           .then(function (data) {
-            $scope.quiz = data.data;
+            $scope.quiz_content_container = true;
             console.log(data.data);
+            $scope.quiz = data.data[0];
+
+            if ($scope.quiz.id == 3) {
+              $scope.diff_quiz = true;
+            } else {
+              $scope.diff_quiz = false;
+            }
+
+            for (let i = 0; i < $scope.systems_progress.quizes.length; i++) {
+              if ($scope.selected_system_id == $scope.systems_progress.quizes[i].id) {
+                console.log($scope.selected_system_id + " " + $scope.systems_progress.quizes[i].id);
+                $scope.quiz_button_disabled = true;
+                break;
+                // document.getElementById("complete_btn_" + $scope.lecture.subject).disabled = true;
+                // document.getElementById("complete_btn_" + $scope.lecture.subject).innerText = "Already Learned"
+              }
+            }
           });
+      };
+
+
+      $scope.complete_lecture = function () {
+        var input = {};
+
+        input["model"] = "";
+        for (let i = 0; i < $scope.systems.length; i++) {
+          if ($scope.systems[i].id == $scope.selected_system_id) {
+            input["model"] = $scope.systems[i].model;
+          }
+        }
+        input['lecture_id'] = $scope.selected_system_id;
+        input["email"] = $scope.email;
+
+        $http.post("/completeLecture", input).then(function (data) {
+          if (data.data === "") {
+            $scope.msgtext = "Something went wrong.";
+          } else {
+            $scope.msgtext = "Lecture completed successfully.";
+            $scope.lecture_button_disabled = true;
+            // document.getElementById("complete_btn_" + $scope.lecture.subject).disabled = true;
+            // document.getElementById("complete_btn_" + $scope.lecture.subject).innerText = "Already Learned"
+            // $scope.msgtext = "Use this form to login";
+          }
+        });
+        $scope.update_progress();
+      };
+
+      $scope.evaluate_diff = function () {
+        var src_elements = [];
+        var dest_elements = [];
+        for (let i = 1; i <= 6; i++) {
+          src_elements[i - 1] = document.getElementById("src-diff_" + i);
+          dest_elements[i - 1] = document.getElementById("dest-diff_" + i);
+        }
+        console.log(src_elements);
+        console.log(dest_elements);
+        var score = 0;
+        for (let i = 0; i < dest_elements.length; i++) {
+          var dest_id = dest_elements[i].getAttribute("id");
+          console.log(dest_id);
+          var childNodes = dest_elements[i].childNodes;
+          if (childNodes.length > 0) {
+            var src_id = childNodes[1].getAttribute("id");
+            console.log(src_id);
+            if (dest_id.split("_")[1] == src_id.split("_")[1]) {
+              console.log("correct");
+              score += 100 / dest_elements.length;
+            } else {
+              console.log("not correct");
+            }
+          }
+        }
+        console.log("score: " + score);
+
+        var input = {};
+
+        input["model"] = "";
+        for (let i = 0; i < $scope.systems.length; i++) {
+          if ($scope.systems[i].id == $scope.selected_system_id) {
+            input["model"] = $scope.systems[i].model;
+          }
+        }
+        input['quiz_id'] = $scope.selected_system_id;
+        input["email"] = $scope.email;
+        input["score"] = score;
+
+        $http.post("/completeQuiz", input).then(function (data) {
+          if (data.data === "") {
+            $scope.msgtext = "Something went wrong.";
+          } else {
+            $scope.msgtext = "System completed successfully.";
+            $scope.quiz_button_disabled = true;
+            // $scope.msgtext = "Use this form to login";
+          }
+        });
+
+        $scope.update_progress();
+      };
+
+      $scope.update_progress = function () {
+        $http.get("/updateProgress/" + $scope.email).then(function (data) {
+          console.log(data);
+          if (data.data === "") {
+            $scope.msgtext = "User not found!";
+          } else {
+            $scope.systems_progress = data.data.systems_progress;
+
+            console.log($scope.systems_progress);
+
+            $scope.progress_lectures = ($scope.systems_progress.lectures.length / $scope.systems.length) * 100;
+            $scope.progress_quizes = ($scope.systems_progress.quizes.length / $scope.systems.length) * 100;
+
+            if ($scope.systems_progress.quizes.length == 0) {
+              $scope.no_quizes_yet = true;
+            } else {
+              $scope.no_quizes_yet = false;
+            }
+
+            if ($scope.systems_progress.lectures.length == 0) {
+              $scope.no_lectures_yet = true;
+            } else {
+              $scope.no_lectures_yet = false;
+            }
+            $scope.nav_home();
+          }
+        });
       };
 
 
@@ -178,6 +405,7 @@
 
       // Register page
       $scope.nav_register = function () {
+        $scope.msgtext = "Use this form to register";
         $scope.select_container = false;
         $scope.select_container_quiz = false;
         $scope.select_container_learn = false;
@@ -252,6 +480,7 @@
         $scope.learn_container = false;
         $scope.quiz_container = false;
         $scope.info_container = false;
+        $scope.performance_container = true;
       }
 
 
@@ -269,35 +498,22 @@
         $scope.quiz_container = false;
         $scope.info_container = false;
         $scope.learn_content_container = false;
+        $scope.quiz_content_container = false;
+        $scope.performance_container = false;
+        $scope.first_name = "";
+        $scope.msgtext_create = "";
+        $scope.systems = [];
+        $scope.systems_progress = [];
+        $scope.progress_lectures = 0;
+        $scope.progress_quizes = 0;
+        $scope.no_lectures_yet = false;
+        $scope.no_quizes_yet = false;
+        $scope.lecture_button_disabled = false;
+        $scope.quiz_button_disabled = false;
+        $scope.is_student = true;
+        $scope.diff_quiz = true;
       };
 
-      $scope.evaluate_diff = function () {
-        var src_elements = [];
-        var dest_elements = [];
-        for (let i = 1; i <= 6; i++) {
-          src_elements[i - 1] = document.getElementById("src-diff_" + i);
-          dest_elements[i - 1] = document.getElementById("dest-diff_" + i);
-        }
-        console.log(src_elements);
-        console.log(dest_elements);
-        var score = 0;
-        for (let i = 0; i < dest_elements.length; i++) {
-          var dest_id = dest_elements[i].getAttribute("id");
-          console.log(dest_id);
-          var childNodes = dest_elements[i].childNodes;
-          if (childNodes.length > 0) {
-            var src_id = childNodes[1].getAttribute("id");
-            console.log(src_id);
-            if (dest_id.split("_")[1] == src_id.split("_")[1]) {
-              console.log("correct");
-              score += 100 / dest_elements.length;
-            } else {
-              console.log("not correct");
-            }
-          }
-        }
-        console.log("score: " + score);
-      };
     });
   </script>
 
@@ -305,9 +521,11 @@
     <main>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
         <div class="container-xl">
+
           <div ng-show="login_tabs_container">
             <a class="navbar-brand" id="nav_home" href="#" ng-click="nav_home()">TheMech</a>
           </div>
+
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL"
             aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -316,49 +534,60 @@
           <div class="collapse navbar-collapse" id="navbarsExample07XL">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <div ng-show="login_tabs_container">
-                  <a class="nav-link" id="nav_learn" aria-current="page" href="#" ng-click="nav_learn()">Learn</a>
-                </div>
-              </li>
-              <li class="nav-item">
-
-                <div ng-show="login_tabs_container">
-                  <a class="nav-link" id="nav_quiz" aria-current="page" href="#" ng-click="nav_quiz()">Quiz</a>
-                </div>
-              </li>
-
-              <li class="nav-item">
-                <div ng-show="login_tabs_container">
-                  <div ng-show="select_container">
-                    <select class="form-select" ng-model="selected_system_id">
-                      <option ng-repeat="x in systems" ng-value="{{x.id}}">
-                        {{x.model}}
-                      </option>
-                    </select>
+                <div ng-show="is_student">
+                  <div ng-show="login_tabs_container">
+                    <a class="nav-link" id="nav_learn" aria-current="page" href="#" ng-click="nav_learn()">Learn</a>
                   </div>
                 </div>
               </li>
 
               <li class="nav-item">
-                <div ng-show="login_tabs_container">
-                  <div ng-show="select_container_learn">
-                    <button type="button" class="btn btn-primary btn-small" ng-click="getLecture()">
-                      Learn System
-                    </button>
+                <div ng-show="is_student">
+                  <div ng-show="login_tabs_container">
+                    <a class="nav-link" id="nav_quiz" aria-current="page" href="#" ng-click="nav_quiz()">Quiz</a>
                   </div>
                 </div>
               </li>
 
               <li class="nav-item">
-                <div ng-show="login_tabs_container">
-                  <div ng-show="select_container_quiz">
-                    <button type="button" class="btn btn-primary btn-small" ng-click="getQuiz()">
-                      Test System
-                    </button>
+                <div ng-show="is_student">
+                  <div ng-show="login_tabs_container">
+                    <div ng-show="select_container">
+                      <select class="form-select" ng-model="selected_system_id">
+                        <option ng-repeat="x in systems" ng-value="{{x.id}}">
+                          {{x.model}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <div ng-show="is_student">
+                  <div ng-show="login_tabs_container">
+                    <div ng-show="select_container_learn">
+                      <button type="button" class="btn btn-primary btn-small" ng-click="getLecture()">
+                        Learn System
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <div ng-show="is_student">
+                  <div ng-show="login_tabs_container">
+                    <div ng-show="select_container_quiz">
+                      <button type="button" class="btn btn-primary btn-small" ng-click="getQuiz()">
+                        Test System
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>
             </ul>
+
             <ul class="
                 navbar-nav
                 me-auto
@@ -408,75 +637,195 @@
     <div class="row d-flex justify-content-center">
       <!--Grid column-->
       <div class="col-md-8">
-        <div ng-show="home_container">
-          <h1>Hello {{first_name}}!</h1>
-          <p>This is a tool for learning about different vehicle systems.</p>
-        </div>
-
-        <div ng-show="register_container">
-          <h1>Register</h1>
-          <form>
-            <div class="me-auto pe-auto bg-light d-inline-block shadow-sm">
-
-              <label>Email</label>
-              <input ng-model="email" type="email" placeholder="Enter email"
-                class="form-control me-auto pe-auto d-block shadow-sm" aria-describedby="emailHelp" required />
-              <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-              <br>
-              <label>First name</label>
-              <input ng-model="first_name" type="text" placeholder="Enter first name"
-                class="form-control me-auto pe-auto d-block shadow-sm" />
-
-              <label>Last name</label>
-              <input ng-model="last_name" type="text" placeholder="Enter last name"
-                class="form-control me-auto pe-auto d-block shadow-sm" />
-
-              <label>Account Type</label>
-              <select class="form-control pe-auto d-block shadow-sm" id="account_type_sel" ng-model="account_type"
-                type="text" required>
-                <option value="" selected disabled hidden>Choose here</option>
-                <option value="teacher">Teacher</option>
-                <option value="student">Student</option>
-              </select>
-
-              <label>Password</label>
-              <input ng-model="password" type="password" placeholder="Enter password"
-                class="form-control me-auto pe-auto d-block shadow-sm" required />
-
-              <br>
-              <p>{{msgtext}}</p>
-              <button class="btn btn-outline-primary btn-sm shadow" ng-click="register()">
-                Register
-              </button>
-              <hr>
-              <a href="" ng-click="nav_login()">Already Registered?</a>
-            </div>
-          </form>
-        </div>
 
         <div ng-show="login_container">
-          <h1>Log In</h1>
-          <form>
-            <div class="me-auto pe-auto bg-light d-inline-block shadow-sm">
-              <label>Email</label>
-              <input ng-model="email" type="email" placeholder="Enter email"
-                class="form-control me-auto pe-auto d-block shadow-sm" required />
-              <label>Password</label>
-              <input ng-model="password" type="password" placeholder="Enter password"
-                class="form-control me-auto pe-auto d-block shadow-sm" required />
-              <br>
-              <p>{{msgtext}}</p>
-              <button class="btn btn-outline-primary btn-sm shadow" ng-click="login()">
-                Login
-              </button>
-              <hr>
-              <a href="" ng-click="nav_register()">Not Registered?</a>
+          <form id="login_form">
+            <div class="row d-flex justify-content-center">
+              <div class="col-md-6 bg-light d-inline-block  shadow-sm">
+                <h1>Log In</h1>
+                <br>
+                <!-- <div class="me-auto pe-auto  d-inline-block shadow-sm mx-sm-6"> -->
+                <div class="form-group">
+                  <label>Email</label>
+                  <input ng-model="email" type="email" placeholder="Enter email"
+                    class="form-control me-auto pe-auto d-block shadow-sm" required />
+                </div>
+                <br>
+                <div class="form-group">
+                  <label>Password</label>
+                  <input ng-model="password" type="password" placeholder="Enter password"
+                    class="form-control me-auto pe-auto d-block shadow-sm" required />
+                </div>
+                <br>
+                <p class="text-primary">{{msgtext}}</p>
+                <button class="btn btn-outline-primary btn-sm shadow" ng-click="login()">
+                  Login
+                </button>
+                <hr>
+                <a href="" ng-click="nav_register()">Not Registered?</a>
+                <!-- </div> -->
+              </div>
             </div>
           </form>
           <!-- <div class="img_container">
           <img src="images/theMech.png" class="mx-auto d-block" alt="TheMech" />
         </div> -->
         </div>
+
+        <div ng-show="register_container">
+          <form id="register_form">
+            <!-- <div class="me-auto pe-auto bg-light d-inline-block shadow-sm"> -->
+
+            <div class="row d-flex justify-content-center">
+              <div class="col-md-6 bg-light d-inline-block  shadow-sm">
+                <h1>Register</h1>
+                <br>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input ng-model="email" type="email" placeholder="Enter email"
+                    class="form-control me-auto pe-auto d-block shadow-sm" aria-describedby="emailHelp" required />
+                  <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                    else.</small>
+                  <br>
+                </div>
+                <br>
+                <div class="form-group">
+                  <label>First name</label>
+                  <input ng-model="first_name" type="text" placeholder="Enter first name"
+                    class="form-control me-auto pe-auto d-block shadow-sm" required />
+                </div>
+                <br>
+                <div class="form-group">
+                  <label>Last name</label>
+                  <input ng-model="last_name" type="text" placeholder="Enter last name"
+                    class="form-control me-auto pe-auto d-block shadow-sm" required />
+                </div>
+                <br>
+                <div class="form-group">
+                  <label>Account Type</label>
+                  <select class="form-control pe-auto d-block shadow-sm" id="account_type_sel" ng-model="account_type"
+                    type="text" required>
+                    <option value="" selected disabled hidden>Choose here</option>
+                    <option value="student">student</option>
+                    <option value="teacher">teacher</option>
+                  </select>
+                </div>
+                <br>
+                <div class="form-group">
+                  <label>Password</label>
+                  <input ng-model="password" type="password" placeholder="Enter password"
+                    class="form-control me-auto pe-auto d-block shadow-sm" required />
+                </div>
+                <br>
+                <p class="text-primary">{{msgtext}}</p>
+                <button class="btn btn-outline-primary btn-sm shadow" ng-click="register()">
+                  Register
+                </button>
+                <hr>
+                <a href="" ng-click="nav_login()">Already Registered?</a>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div ng-show="is_student">
+          <div ng-show="home_container">
+            <h1>Hello {{first_name}}</h1>
+            <p>This is a tool for learning about different vehicle systems.</p>
+            <div ng-show="performance_container">
+              <br>
+              <h3>Lectures</h3>
+              <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{progress_lectures}}%"
+                  aria-valuenow="{{progress_lectures}}" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <br>
+              <p ng-show="no_lectures_yet">No lectures have been completed yet</p>
+              <div ng-repeat="x in systems_progress.lectures">
+                <p>
+                <div class="row">
+                  <div class="col-md-8">
+                    <strong>{{x.model}}</strong>
+                  </div>
+                  <div class="col-md-4">
+                    Completed
+                  </div>
+                </div>
+                </p>
+              </div>
+              <br>
+              <br>
+              <h3>Quizes</h3>
+              <div class="progress">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{progress_quizes}}%"
+                  aria-valuenow="{{progress_quizes}}" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <br>
+              <p ng-show="no_quizes_yet">No quizes have been completed yet</p>
+              <div ng-repeat="x in systems_progress.quizes">
+                <p>
+                <div class="row">
+                  <div class="col-md-8">
+                    <strong>{{x.model}}</strong>
+                  </div>
+                  <div class="col-md-4">
+                    {{x.score | number : 2}} / 100
+                  </div>
+                </div>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="!is_student">
+          <div ng-show="home_container">
+            <h1>Hello professor {{first_name}}</h1>
+            <p>This is a tool for teaching your students about different vehicle systems.</p>
+            <br>
+            <form id="add_lecture_form">
+              <!-- <div class="me-auto pe-auto bg-light d-inline-block shadow-sm mx-sm-6"> -->
+
+              <div class="row d-flex justify-content-center">
+                <div class="col-md-6 bg-light d-inline-block  shadow-sm">
+                  <h3>Create Lecture</h3>
+                  <br>
+                  <div class="form-group">
+                    <label>ID</label>
+                    <input ng-model="new_lecture_id" type="number" placeholder="Enter ID (must be integer)"
+                      class="form-control me-auto pe-auto d-block shadow-sm" required />
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label>Subject</label>
+                    <input ng-model="new_lecture_subject" type="text" placeholder="Enter subject"
+                      class="form-control me-auto pe-auto d-block shadow-sm" required />
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label>Definition</label>
+                    <textarea ng-model="new_lecture_definition" type="text" placeholder="Enter definition"
+                      class="form-control me-auto pe-auto d-block shadow-sm" rows="3" required></textarea>
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label>Description</label>
+                    <textarea ng-model="new_lecture_description" type="text" placeholder="Enter description"
+                      class="form-control me-auto pe-auto d-block shadow-sm" rows="6" required></textarea>
+                  </div>
+                  <br>
+                  <p class="text-success">{{msgtext_create}}</p>
+                  <hr>
+                  <button class="btn btn-outline-primary btn-sm shadow" ng-click="addLecture()">
+                    Create Lecture
+                  </button>
+                  <br>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
 
         <!-- <div ng-show="info_container">
           <div class="me-auto pe-auto bg-light d-inline-block shadow-sm">
@@ -488,28 +837,31 @@
           </div>
         </div> -->
 
-        <div ng-show="learn_container">
-          <div ng-show="learn_content_container">
-            <!-- The Differential -->
-            <h1>Learn: The {{lecture.subject}}!</h1>
-            <hr>
-            <h4>What is the {{lecture.subject}}?</h4>
-            <p> {{lecture.definition}} </p>
-            <br>
+        <div ng-show="is_student">
+          <div ng-show="learn_container">
+            <div ng-show="learn_content_container">
+              <h4 class="text-success" ng-show="lecture_button_disabled">System has already been learned!</h4>
+              <br>
+              <!-- The Differential -->
+              <h1>Learn: The {{lecture.subject}}!</h1>
+              <hr>
+              <h4>What is the {{lecture.subject}}?</h4>
+              <p> {{lecture.definition}} </p>
+              <br>
 
-            <div class="text-center">
-              <!-- <map name="differential_map">
+              <div class="text-center">
+                <!-- <map name="differential_map">
               <area shape="rect" coords="34,44,270,350" href="" onmouseover="differentialPart()">
             </map> -->
-              <!-- usemap="#differential_map"  -->
-              <div class="img_container">
-                <div class="container">
-                  <img src="{{lecture.img_path}}" class="learn_img" alt="{{lecture.subject}}" />
-                  <div ng-repeat="x in lecture.parts">
-                    <button id="{{x.class}}" class="{{x.class}} hov_btn hoverable btn-danger" data-container="body"
-                      data-toggle="popover" title="{{x.label}}">O</button>
-                  </div>
-                  <!-- <button class="diff1_btn btn-danger" data-container="body" data-toggle="popover"
+                <!-- usemap="#differential_map"  -->
+                <div class="img_container">
+                  <div class="container">
+                    <img src="{{lecture.img_path}}" class="learn_img" alt="{{lecture.subject}}" />
+                    <div ng-repeat="x in lecture.parts">
+                      <button id="{{x.class}}" class="{{x.class}} hov_btn hoverable btn-danger" data-container="body"
+                        data-toggle="popover" title="{{x.label}}">O</button>
+                    </div>
+                    <!-- <button class="diff1_btn btn-danger" data-container="body" data-toggle="popover"
                     title="This is the part B. The part B does this and this.">
                     O
                   </button>
@@ -517,79 +869,102 @@
                     title="This is the part A. The part A does this and this.">
                     O
                   </button> -->
+                  </div>
                 </div>
               </div>
+              <br>
+              <h4>How the {{lecture.subject}} works?</h4>
+              <p ng-repeat="x in lecture.descriptions"> {{x}} </p>
+              <br>
+              <!-- id="complete_btn_{{lecture.subject}}" -->
+              <button class="btn btn-success" type="button" ng-click="complete_lecture()"
+                ng-show="!lecture_button_disabled">Complete</button>
             </div>
-            <br>
-            <h4>How the {{lecture.subject}} works?</h4>
-            <p ng-repeat="x in lecture.descriptions"> {{x}} </p>
           </div>
         </div>
 
-        <div ng-show="quiz_container">
-          <h1>Quiz: The Differential</h1>
+        <div ng-show="is_student">
+          <div ng-show="quiz_container">
+            <div ng-show="quiz_content_container">
+              <h4 class="text-success" ng-show="quiz_button_disabled">Quiz has already been taken!</h4>
+              <br>
+              <h1>Quiz: The {{quiz.subject}}</h1>
 
-          <hr />
-          <h4>Match the Differential's components</h4>
-          <p>
-            Drag and drop the images to the correct order to form the
-            differential
-          </p>
+              <hr />
+              <h4>Instruction:</h4>
+              <p>
+                {{quiz.instruction}}
+              </p>
 
-          <div class="row">
-            <div class="col-md-5"></div>
-            <div id="dest-diff_1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            </div>
-            <div id="dest-diff_2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <div ng-show="!diff_quiz">
+                <p>This system quiz is currently not available. Your instructor will enable it soon.</p>
+              </div>
+
+              <div ng-show="diff_quiz">
+                <div class="row">
+                  <div class="col-md-5"></div>
+                  <div id="dest-diff_1" class="dragable_div col-md-2" ondrop="drop(event)"
+                    ondragover="allowDrop(event)">
+                  </div>
+                  <div id="dest-diff_2" class="dragable_div col-md-2" ondrop="drop(event)"
+                    ondragover="allowDrop(event)">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4"></div>
+                  <div id="dest-diff_3" class="dragable_div col-md-2" ondrop="drop(event)"
+                    ondragover="allowDrop(event)">
+                  </div>
+                  <div id="dest-diff_4" class="dragable_div col-md-2" ondrop="drop(event)"
+                    ondragover="allowDrop(event)">
+                  </div>
+                  <div id="dest-diff_5" class="dragable_div col-md-2" ondrop="drop(event)"
+                    ondragover="allowDrop(event)">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-5"></div>
+                  <div id="dest-diff_6" class="dragable_div col-md-2" ondrop="drop(event)"
+                    ondragover="allowDrop(event)">
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div id="div_src1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <img src="./images/differential/differential1b.JPG" class="dragable_img" draggable="true"
+                      ondragstart="drag(event)" id="src-diff_1" />
+                  </div>
+                  <div id="div_src2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <img src="./images/differential/differential1tt.JPG" class="dragable_img" draggable="true"
+                      ondragstart="drag(event)" id="src-diff_2" />
+                  </div>
+                  <div id="div_src4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <img src="./images/differential/differential1t.JPG" class="dragable_img" draggable="true"
+                      ondragstart="drag(event)" id="src-diff_4" />
+                  </div>
+                  <div id="div_src5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <img src="./images/differential/differential2.JPG" class="dragable_img" draggable="true"
+                      ondragstart="drag(event)" id="src-diff_5" />
+                  </div>
+                  <div id="div_src6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <img src="./images/differential/differential3.JPG" class="dragable_img" draggable="true"
+                      ondragstart="drag(event)" id="src-diff_6" />
+                  </div>
+                  <div id="div_src3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <img src="./images/differential/differential1.JPG" class="dragable_img" draggable="true"
+                      ondragstart="drag(event)" id="src-diff_3" />
+                  </div>
+                </div>
+                <br>
+                <button class="btn btn-success" type="button" ng-click="evaluate_diff()"
+                  ng-show="!quiz_button_disabled">Evaluate</button>
+              </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-4"></div>
-            <div id="dest-diff_3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            </div>
-            <div id="dest-diff_4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            </div>
-            <div id="dest-diff_5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-5"></div>
-            <div id="dest-diff_6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            </div>
-          </div>
-          <br>
-          <div class="row">
-            <div id="div_src1" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-              <img src="./images/differential/differential1b.JPG" class="dragable_img" draggable="true"
-                ondragstart="drag(event)" id="src-diff_1" />
-            </div>
-            <div id="div_src2" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-              <img src="./images/differential/differential1tt.JPG" class="dragable_img" draggable="true"
-                ondragstart="drag(event)" id="src-diff_2" />
-            </div>
-            <div id="div_src4" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-              <img src="./images/differential/differential1t.JPG" class="dragable_img" draggable="true"
-                ondragstart="drag(event)" id="src-diff_4" />
-            </div>
-            <div id="div_src5" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-              <img src="./images/differential/differential2.JPG" class="dragable_img" draggable="true"
-                ondragstart="drag(event)" id="src-diff_5" />
-            </div>
-            <div id="div_src6" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-              <img src="./images/differential/differential3.JPG" class="dragable_img" draggable="true"
-                ondragstart="drag(event)" id="src-diff_6" />
-            </div>
-            <div id="div_src3" class="dragable_div col-md-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-              <img src="./images/differential/differential1.JPG" class="dragable_img" draggable="true"
-                ondragstart="drag(event)" id="src-diff_3" />
-            </div>
-          </div>
-          <br>
-          <button class="btn btn-primary" type="button" ng-click="evaluate_diff()">Evaluate</button>
+          <!--Grid column-->
         </div>
-        <!--Grid column-->
+        <!--Grid row-->
       </div>
-      <!--Grid row-->
     </div>
   </div>
 </body>
