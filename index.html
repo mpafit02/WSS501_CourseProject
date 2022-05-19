@@ -124,7 +124,7 @@
           console.log("password: " + input["password"]);
 
           $http.post("/login", input).then(function (data) {
-            if (data.data === "") {
+            if (data.data.status === "error") {
               $scope.msgtext = "User not found!";
             } else {
               /*        $scope.jsontext = data.data;*/
@@ -162,11 +162,11 @@
               }
               $scope.nav_home();
               document.forms['login_form'].reset();
+              $scope.update_progress();
             }
             console.log($scope.msgtext);
           });
 
-          $scope.update_progress();
         }
       };
 
@@ -183,7 +183,7 @@
           input["account_type"] = $scope.account_type;
 
           $http.post("/register", input).then(function (data) {
-            if (data.data === "") {
+            if (data.data.status === "error") {
               $scope.msgtext = "Something went wrong.";
             } else {
               $scope.msgtext = "User added successfully.";

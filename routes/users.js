@@ -133,12 +133,12 @@ router.get("/updateProgress/:id", function (req, res) {
       if (err) throw err;
       console.log(data);
       if (!data) {
-        console.log("User Not found!");
+        console.log("User not found in update progress!");
         // send the results back to the client for display
         res.end(false);
         db.close();
       } else {
-        console.log("User found!");
+        console.log("User found in update progress!");
         // send the results back to the client for display
         res.end(JSON.stringify(data));
         db.close();
