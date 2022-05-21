@@ -50,16 +50,10 @@ router.post("/login", function (req, res) {
               res.end(JSON.stringify({ status: "error" }));
               db.close();
             } else {
-              if (result) {
-                console.log("Identified");
-                // send the results back to the client for display
-                res.end(JSON.stringify(data));
-                db.close();
-              } else {
-                console.log("Not Identified");
-                res.end(JSON.stringify({ status: "error" }));
-                db.close();
-              }
+              console.log("Identified");
+              // send the results back to the client for display
+              res.end(JSON.stringify(data));
+              db.close();
             }
           }
         );
