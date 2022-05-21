@@ -76,6 +76,10 @@
       $scope.learn_content_container = false;
       $scope.quiz_content_container = false;
       $scope.first_name = "";
+      $scope.last_name = "";
+      $scope.email = "";
+      $scope.password = "";
+      $scope.msgtext_create = "";
       $scope.systems = [];
       $scope.systems_progress = [];
       $scope.progress_lectures = 0;
@@ -86,7 +90,6 @@
       $scope.quiz_button_disabled = false;
       $scope.is_student = true;
       $scope.diff_quiz = true;
-      $scope.msgtext_create = "";
 
       // $scope.systems = [
       //   { model: "Engine", id: 1 },
@@ -212,7 +215,7 @@
 
 
           $http.post("/addLecture", input).then(function (data) {
-            if (data.data === "") {
+            if (data.data.status === "error") {
               $scope.msgtext = "Something went wrong.";
             } else {
               $scope.msgtext_create = "Lecture created successfully.";
@@ -289,7 +292,7 @@
         input["email"] = $scope.email;
 
         $http.post("/completeLecture", input).then(function (data) {
-          if (data.data === "") {
+          if (data.data.status === "error") {
             $scope.msgtext = "Something went wrong.";
           } else {
             $scope.msgtext = "Lecture completed successfully.";
@@ -342,7 +345,8 @@
         input["score"] = score;
 
         $http.post("/completeQuiz", input).then(function (data) {
-          if (data.data === "") {
+
+          if (data.data.status === "error") {
             $scope.msgtext = "Something went wrong.";
           } else {
             $scope.msgtext = "System completed successfully.";
@@ -357,7 +361,7 @@
       $scope.update_progress = function () {
         $http.get("/updateProgress/" + $scope.email).then(function (data) {
           console.log(data);
-          if (data.data === "") {
+          if (data.data.status === "error") {
             $scope.msgtext = "User not found!";
           } else {
             $scope.systems_progress = data.data.systems_progress;
@@ -501,6 +505,9 @@
         $scope.quiz_content_container = false;
         $scope.performance_container = false;
         $scope.first_name = "";
+        $scope.last_name = "";
+        $scope.email = "";
+        $scope.password = "";
         $scope.msgtext_create = "";
         $scope.systems = [];
         $scope.systems_progress = [];

@@ -118,14 +118,14 @@ router.use(bodyParser.json());
 //   });
 // });
 
-router.get("/updateProgress/:id", function (req, res) {
+router.get("/updateProgress/:email", function (req, res) {
   var MongoClient = mongodb.MongoClient;
   var url = "mongodb://localhost:27017/";
   MongoClient.connect(url, function (err, db) {
     if (err) throw err;
     var dbo = db.db("wss551");
     var key = "email";
-    var value = req.params.id;
+    var value = req.params.email;
     var query = {};
     query[key] = value;
 
@@ -135,7 +135,7 @@ router.get("/updateProgress/:id", function (req, res) {
       if (!data) {
         console.log("User not found in update progress!");
         // send the results back to the client for display
-        res.end(false);
+        res.end(JSON.stringify({ status: "error" }));
         db.close();
       } else {
         console.log("User found in update progress!");

@@ -76,8 +76,16 @@ router.post(
 
       dbo.collection("systems").insertOne(system, function (err, data) {
         if (err) throw err;
-        console.log("1 document inserted in systems");
-        res.end(JSON.stringify(data));
+        if (!data) {
+          console.log("Document failed to be updated!");
+          // send the results back to the client for display
+          res.end(JSON.stringify({ status: "error" }));
+          db.close();
+        } else {
+          console.log("1 document inserted in systems");
+          res.end(JSON.stringify(data));
+          db.close();
+        }
       });
     });
   }
@@ -147,9 +155,16 @@ router.post("/completeLecture", function (req, res) {
     };
     dbo.collection("users").updateOne(query, newvalues, function (err, data) {
       if (err) throw err;
-      console.log("1 document updated");
-      res.end(JSON.stringify(data)); // send results back to client for display
-      db.close();
+      if (!data) {
+        console.log("Document failed to be updated!");
+        // send the results back to the client for display
+        res.end(JSON.stringify({ status: "error" }));
+        db.close();
+      } else {
+        console.log("1 document updated");
+        res.end(JSON.stringify(data)); // send results back to client for display
+        db.close();
+      }
     });
   });
 });
