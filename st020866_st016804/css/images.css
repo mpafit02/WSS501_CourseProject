@@ -1,0 +1,33 @@
+.dragable_img {
+  width: 100px;
+  height: 100px;
+  margin-top: 10px;
+  float: left;
+}
+
+.dragable_div {
+  width: 126px;
+  height: 126px;
+  margin: 6px;
+  /* float: left; */
+  border: 2px solid black;
+}
+
+.learn_img {
+  width: 640px;
+  height: 360px;
+}
+
+/* Container needed to position the button. Adjust the width as needed */
+.container {
+  position: relative;
+  /* width: 50%; */
+}
+
+/* Make the image responsive */
+.container img {
+  width: 100%;
+  height: auto;
+  /* width: 640px;
+  height: 360px; */
+}
