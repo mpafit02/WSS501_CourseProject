@@ -47,16 +47,22 @@
   <!-- Custom styles for this template -->
   <link href="/css/navbar.css" rel="stylesheet" />
   <link href="/css/images.css" rel="stylesheet" />
-  <link href="/css/differential.css" rel="stylesheet" />
+  <link href="/css/quiz.css" rel="stylesheet" />
 
   <!-- <script src="/js/navigation.js"></script> -->
   <script src="/js/drag_and_drop.js"></script>
-  <script src="/js/learn_differential.js"></script>
+  <script src="/js/learn.js"></script>
 </head>
 
 <body>
   <script>
     var app = angular.module("myApp", []);
+
+    app.filter('trustAsResourceUrl', ['$sce', function ($sce) {
+      return function (val) {
+        return $sce.trustAsResourceUrl(val);
+      };
+    }]);
     app.controller("appCtrl", function ($scope, $http) {
 
       // Default
@@ -211,6 +217,7 @@
           input["definition"] = $scope.new_lecture_definition;
           input["description"] = $scope.new_lecture_description;
           input["img_path"] = "./images/noimage.jpg";
+          input["model_url"] = "https://sketchfab.com/models/acaf00f5bcf64bc48253602e48bec0ab/embed";
           input["parts"] = [];
 
 
@@ -235,6 +242,8 @@
             $scope.learn_content_container = true;
             console.log(data.data);
             $scope.lecture = data.data[0];
+
+            // document.getElementById('embeddedPage').contentWindow.location.replace($scope.model_url);
 
             // document.addEventListener("DOMContentLoaded", function (event) {
             for (let i = 0; i < $scope.systems_progress.lectures.length; i++) {
@@ -855,7 +864,6 @@
               <h4>What is the {{lecture.subject}}?</h4>
               <p> {{lecture.definition}} </p>
               <br>
-
               <div class="text-center">
                 <!-- <map name="differential_map">
               <area shape="rect" coords="34,44,270,350" href="" onmouseover="differentialPart()">
@@ -882,6 +890,14 @@
               <br>
               <h4>How the {{lecture.subject}} works?</h4>
               <p ng-repeat="x in lecture.descriptions"> {{x}} </p>
+              <br>
+              <h4>The 3D model of {{lecture.subject}}!</h4>
+              <div class="text-center">
+                <div class="ratio ratio-16x9">
+                  <iframe id="embeddedPage" ng-src='{{lecture.model_url | trustAsResourceUrl}}' title="3d"
+                    allowfullscreen></iframe>
+                </div>
+              </div>
               <br>
               <!-- id="complete_btn_{{lecture.subject}}" -->
               <button class="btn btn-success" type="button" ng-click="complete_lecture()"

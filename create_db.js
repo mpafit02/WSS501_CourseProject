@@ -29,7 +29,7 @@ MongoClient.connect(url, function (err, db) {
       email: "marios@gmail.com",
       first_name: "Marios",
       last_name: "Pafitis",
-      password: "1234",
+      password: "this is the hashed password",
       account_type: "student",
       systems_progress: {
         quizes: [
@@ -54,7 +54,7 @@ MongoClient.connect(url, function (err, db) {
       email: "vasilis@gmail.com",
       first_name: "Vasileios",
       last_name: "Samaras",
-      password: "5678",
+      password: "this is the hashed password",
       account_type: "teacher",
       systems_progress: { quizes: [], lectures: [] },
     },
@@ -145,6 +145,8 @@ MongoClient.connect(url, function (err, db) {
           class: "brake2_btn",
         },
       ],
+      model_url:
+        "https://sketchfab.com/models/5feda9dbf20a49cf9fd29d550e55e4b9/embed?utm_source=website&amp;utm_campaign=blocked_scripts_error",
     },
     {
       id: 2,
@@ -167,6 +169,8 @@ MongoClient.connect(url, function (err, db) {
           class: "susp2_btn",
         },
       ],
+      model_url:
+        "https://sketchfab.com/models/2f1d0812ba4d4cdda6701ad84bd16538/embed",
     },
     {
       id: 3,
@@ -192,6 +196,8 @@ MongoClient.connect(url, function (err, db) {
           class: "diff3_btn",
         },
       ],
+      model_url:
+        "https://sketchfab.com/models/acaf00f5bcf64bc48253602e48bec0ab/embed",
     },
   ];
 

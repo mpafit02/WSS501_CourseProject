@@ -7,24 +7,24 @@ var router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
-/* GET lectures listing. */
-router.get("/listLectures", function (req, res, next) {
-  var MongoClient = mongodb.MongoClient;
-  var url = "mongodb://localhost:27017/";
-  MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("wss551");
-    dbo
-      .collection("lectures")
-      .find({})
-      .toArray(function (err, result) {
-        if (err) throw err;
-        console.log(result);
-        res.end(JSON.stringify(result));
-        db.close();
-      });
-  });
-});
+// /* GET lectures listing. */
+// router.get("/listLectures", function (req, res, next) {
+//   var MongoClient = mongodb.MongoClient;
+//   var url = "mongodb://localhost:27017/";
+//   MongoClient.connect(url, function (err, db) {
+//     if (err) throw err;
+//     var dbo = db.db("wss551");
+//     dbo
+//       .collection("lectures")
+//       .find({})
+//       .toArray(function (err, result) {
+//         if (err) throw err;
+//         console.log(result);
+//         res.end(JSON.stringify(result));
+//         db.close();
+//       });
+//   });
+// });
 
 router.post(
   "/addLecture",
@@ -34,6 +34,7 @@ router.post(
     console.log("definition: " + req.body.definition);
     console.log("description: " + req.body.description);
     console.log("img_path: " + req.body.img_path);
+    console.log("model_url: " + req.body.model_url);
     console.log("parts: " + req.body.parts);
 
     var MongoClient = mongodb.MongoClient;
@@ -44,16 +45,17 @@ router.post(
       var dbo = db.db("wss551");
       // You can accept the same input in the form of JSON using Ajax call
       // but for demonstration purpose, we are hard-coding it here.
-      var quiz = {
+      var lecture = {
         id: req.body.id,
         subject: req.body.subject,
         definition: req.body.definition,
         descriptions: [req.body.description],
         img_path: req.body.img_path,
+        model_url: req.body.model_url,
         parts: req.body.parts,
       };
 
-      dbo.collection("lectures").insertOne(quiz, function (err, data) {
+      dbo.collection("lectures").insertOne(lecture, function (err, data) {
         if (err) throw err;
         console.log("1 document inserted in lectures");
         // send the results back to the client for display db.close();
