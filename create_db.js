@@ -26,7 +26,7 @@ MongoClient.connect(url, function (err, db) {
   var myusers = [
     {
       id: 1,
-      email: "marios@gmail.com",
+      email: "test_student@gmail.com",
       first_name: "Marios",
       last_name: "Pafitis",
       password: "this is the hashed password",
@@ -51,7 +51,7 @@ MongoClient.connect(url, function (err, db) {
     },
     {
       id: 2,
-      email: "vasilis@gmail.com",
+      email: "test_teacher@gmail.com",
       first_name: "Vasileios",
       last_name: "Samaras",
       password: "this is the hashed password",

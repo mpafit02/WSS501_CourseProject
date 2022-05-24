@@ -1,0 +1,31 @@
+Raw data for TEACHER to Insert a new LEARN SYSTEM
+
+ID
+4
+
+Subject
+Battery
+
+Definition
+An automotive battery or car battery is a rechargeable battery that is used to start a motor vehicle. Its main purpose is to provide an electric current to the electric-powered starting motor, which in turn starts the chemically-powered internal combustion engine that actually propels the vehicle. Once the engine is running, power for the car's electrical systems is still supplied by the battery, with the alternator charging the battery as demands increase or decrease.
+
+Description
+While there are many battery chemistries today, and new types becoming commercially viable over time, we deal with the lead acid types, flooded, AGM, and true Gel, as they are widely used in the applications we specialize in. Lead acid battery technology has been used commercially for over a century. Some archeological finds of the appropriate materials in a man made configuration suggest the principle has been known and used much longer than that. Their construction is of lead alloy plates, and an electrolyte of sulphuric acid and water. A battery is made up of a number of cells, and the lead acid chemistry dictates a fully charged voltage of about 2.12 volts per cell. Thus, a nominal 6 volt battery has three cells with a full charge voltage of 6.3 to 6.4 volts, and a 12 volt battery has six cells, and a full charge voltage of 12.7 volts. High quality, high performance lead acid batteries may may exhibit higher cell voltage.
+
+The cell has two plate types, one of lead and one of lead dioxide, both in contact with the sulfuric acid electrolyte as either a liquid, absorbed in a mat, or a gel. The lead dioxide (PbO2) plate reacts with the sulfuric acid (H2SO4) electrolyte resulting in hydrogen ions and oxygen ions (which make water) and lead sulfate (PbSO4) on the plate. The lead plate reacts with the electrolyte (sulfuric acid) and leaves lead sulfate (PbSO4), and a free electron. Discharge of the battery (allowing electrons to leave the battery) results in the build up of lead sulfate on the plates and water dilution of the acid. More on sulfation and its problems later. The specific gravity of the electrolyte as measured with a hydrometer in flooded batteries, indicates its relative charge (strength), or level of dilution (discharge). The reversibility of this reaction gives us the usefulness of a lead acid battery. The sealed versions contain the water, hydrogen, etc. under normal use, for recombination, and eliminate the maintenance of checking water levels, and corrosion around the terminals.
+
+Charging the battery is reversing the process above, and involves subjecting the battery to voltages higher than its existing voltage. The higher the voltage, the faster the charge rate, subject to some limitations. There is a gassing point to consider, and true gel batteries have a lower peak charge voltage, because bubbles can occur in the gel which don't dissipate, and result in battery damage. More on this in the charging tutorial.
+
+The electrolyte may be absorbed into a mat type material so there is no free electrolyte (AGM battery), or may be in a gel format which also stabilizes it (true Gel battery). Current lead-acid batteries are basically distinguished as deep cycle/storage (rated in amp hours), or automotive SLI type (Starting/Lighting/Ignition), rated in cranking amps. There are also combination types, rated for both duties, but these usually have a lower cranking amp rating than a starting battery of the same group size.
+
+IMAGES
+https://raymandnet.ir/wp-content/uploads/2020/11/UPS-battery-components.png
+
+
+https://th.bing.com/th/id/R.28c1c430b40d4a059c39829faa8aead6?rik=%2fTCCBGF836vwfA&riu=http%3a%2f%2fwww.enerfx.co.za%2fwp%2fwp-content%2fuploads%2f2020%2f09%2fBattery-cross-section-sm.png&ehk=Q%2bkOkhv48JP7zYrnuH2UQrMJGZaasMfGPKMtHgRe%2bbc%3d&risl=&pid=ImgRaw&r=0
+
+3D
+https://sketchfab.com/models/455c1b96e8214b45ac06bb2742d8b50d/embed
+
+
+

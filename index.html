@@ -217,7 +217,7 @@
           input["definition"] = $scope.new_lecture_definition;
           input["description"] = $scope.new_lecture_description;
           input["img_path"] = "./images/noimage.jpg";
-          input["model_url"] = "https://sketchfab.com/models/acaf00f5bcf64bc48253602e48bec0ab/embed";
+          input["model_url"] = $scope.new_lecture_model_url;
           input["parts"] = [];
 
 
@@ -815,6 +815,12 @@
                   <div class="form-group">
                     <label>Subject</label>
                     <input ng-model="new_lecture_subject" type="text" placeholder="Enter subject"
+                      class="form-control me-auto pe-auto d-block shadow-sm" required />
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label>Model URL</label>
+                    <input ng-model="new_lecture_model_url" type="text" placeholder="Enter model URL"
                       class="form-control me-auto pe-auto d-block shadow-sm" required />
                   </div>
                   <br>
